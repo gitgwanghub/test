@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Hello</title>
+<link rel="stylesheet" type="text/css" href="../css/create.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script type="text/javascript" src="../js/create.js"></script>
+</head>
+<body>
+	<div class="container">
+			<div class="row">
+				<div class="col-25">
+					<label for="title">제목</label>
+				</div>
+				<div class="col-75">
+					<input type="text" id="title" placeholder="제목을 입력하세요">
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-25">
+					<label for="writer">작성자</label>
+				</div>
+				<div class="col-75">
+					<input type="text" id="writer" placeholder="작성자를 입력하세요">
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-25">
+					<label for="contents">내용</label>
+				</div>
+				<div class="col-75">
+					<textarea id="contents" rows="10" cols="30"
+						placeholder="내용을 입력하세요"></textarea>
+				</div>
+			</div>
+			<div class="row">
+				<button id="create" class="button">글쓰기</button>
+				<button id="cancel" class="button">취소</button>
+			</div>
+	</div>
+</body>
+</html>
+
+<!-- form 태그안에 버튼 넣으면 submit 처럼 작동 -->

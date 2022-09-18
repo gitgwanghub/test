@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.board.mapper.BoardMapper">
+
+	<select id="getList" resultType="com.example.board.dto.BoardDto">
+		SELECT *
+		  FROM (
+				SELECT  id, title, 
+						(substr(writer, 1, 3) || lpad('*', 4, '*')) writer, 
+						contents, cdate, mdate, stat, views,
+						ROW_NUMBER() OVER(ORDER BY ID DESC) AS rnum, 
+				CEIL (ROW_NUMBER() OVER(ORDER BY ID	DESC) / 10) AS pg
+				FROM USER05.BOARD
+				WHERE 1=1
+				AND title LIKE '%' || DECODE(#{title}, null, '', #{title})  || '%'
+				AND writer LIKE '%' || DECODE(#{writer}, null, '', #{writer}) || '%'
+				AND contents LIKE '%' || DECODE(#{contents}, null, '', #{contents}) || '%'
+				AND stat = 'A'
+				ORDER BY cdate DESC
+				) A
+		 WHERE 1=1
+		   AND pg = DECODE(#{pg}, null, 1, #{pg})
+	</select>
+
+	<select id="getBoard" parameterType="Integer"
+		resultType="com.example.board.dto.BoardDto">
+		SELECT id, title, contents, writer, cdate, mdate, stat,	views
+		FROM board
+		WHERE id = #{id}
+		AND stat = 'A'
+	</select>
+
+	<select id="getTotal" resultType="Integer">
+		SELECT count(*)
+		  FROM USER05.BOARD b
+		 WHERE 1=1
+		   AND title LIKE '%' || DECODE(#{title}, null, '', #{title}) || '%'
+		   AND writer LIKE '%' || DECODE(#{writer}, null, '', #{writer}) || '%'
+		   AND contents LIKE '%' || DECODE(#{contents}, null, '', #{contents}) || '%'
+		   AND stat = 'A'
+	</select>
+	<insert id="insert"
+		parameterType="com.example.board.dto.BoardDto">
+		<selectKey keyProperty="id" resultType="Integer"
+			order="BEFORE">
+			SELECT board_seq.nextval from dual
+		</selectKey>
+		INSERT INTO board(id, title, contents, writer, cdate, mdate, stat,
+		views)
+		VALUES (#{id}, #{title}, #{contents}, #{writer}, sysdate, null, 'A', 0)
+	</insert>
+	<update id="viewCnt" parameterType="com.example.board.dto.BoardDto">
+		UPDATE board
+		   SET views = views + 1
+		 WHERE id = #{id}
+	</update>
+	<update id="update"
+		parameterType="com.example.board.dto.BoardDto">
+		UPDATE board
+		SET title = #{title},
+		contents = #{contents},
+		writer = #{writer},
+		mdate = sysdate
+		WHERE id = #{id}
+	</update>
+	<update id="delete">
+		UPDATE board
+		SET mdate = sysdate,
+			stat = 'I'
+		WHERE id IN 
+		<foreach collection="list" item="id" open="(" close=")" separator="," >
+		#{id}
+		</foreach>
+	</update>
+</mapper>

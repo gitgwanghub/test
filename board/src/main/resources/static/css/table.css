@@ -1,0 +1,109 @@
+@charset "UTF-8";
+* {
+	box-sizing: border-box;
+}
+
+.container {
+	border-radius: 5px;
+	background-color: #f2f2f2;
+	padding: 20px;
+}
+
+.center {
+	width: 75%;
+	float:left
+}
+
+.right {
+	width: 75%;
+}
+
+.row:after {
+	content: "";
+	display: table;
+	clear: both;
+}
+
+#board {
+	font-family: Arial, Helvetica, sans-serif;
+	border-collapse: collapse;
+	width: 100%;
+}
+
+#board th, #board td {
+	border: 1px solid #ddd;
+	padding: 8px;
+}
+
+#board tr:nth-child(even) {
+	background-color: #f2f2f2;
+}
+
+#board tr:hover {
+	background-color: #ddd;
+}
+
+#board th {
+	padding-top: 12px;
+	padding-bottom: 12px;
+	text-align: left;
+	background-color: #04AA6D;
+	color: white;
+}
+
+.pagenation {
+	display: inline-block;
+}
+
+.pagenation a {
+	color: black;
+	float: left;
+	padding: 8px 16px;
+	text-decoration: none;
+}
+
+.pagenation a.active {
+	background-color: #4CAF50;
+	color: white;
+}
+
+.pagenation a:hover:not(.active) {
+	background-color: #ddd;
+}
+
+.button {
+	border: none;
+	color: white;
+	padding: 8px 16px;
+	text-align: center;
+	text-decoration: none;
+	display: inline-block;
+	font-size: 12px;
+	margin: 4px 2px;
+	
+	cursor: pointer;
+}
+
+#delete {
+	background-color: #F44336;
+}
+
+#delete:hover {
+	background-color: #da190b;
+}
+
+#create {
+	background-color: #4CAF50;
+}
+
+#create:hover {
+	background-color: #46a049;
+}
+
+#search {
+	background-color: #008CBA;
+}
+
+#search:hover {
+	background-color: #0b7dda;
+}
