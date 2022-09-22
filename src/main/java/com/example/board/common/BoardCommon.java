@@ -4,6 +4,6 @@ import lombok.Data;
 
 @Data
 public class BoardCommon {
-	private int pg;
+	private int pg111;
 	private int rnum;
 } 
