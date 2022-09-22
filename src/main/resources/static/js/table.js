@@ -2,6 +2,7 @@ $(document).ready(() => {
 	var now = parseInt(boardList[0].pg);
 	var max = Math.ceil(total / 10);
 	var tableHtml = '';
+	var pageHtml = ''
 	var data = {
 		pg: 1,
 		title: '',
@@ -9,7 +10,6 @@ $(document).ready(() => {
 		contents: ''
 	}
 	getTable(data)
-	getPage(data);
 
 
 	$("#prev").on("click", () => {
@@ -18,7 +18,6 @@ $(document).ready(() => {
 			now = parseInt(now) - 1;
 			data.pg = now;
 			getTable(data);
-			getPage(data);
 		}
 	})
 
@@ -29,7 +28,6 @@ $(document).ready(() => {
 			now = now + 1;
 			data.pg = now;
 			getTable(data);
-			getPage(data)
 		}
 	})
 
@@ -45,17 +43,22 @@ $(document).ready(() => {
 			//this가 안먹음..
 		});
 		data = { idList: idList }
-		$.ajax({
-			type: "POST",
-			url: "table/delete",
-			dataType: "json",
-			//			contentType: "application/json; charset=utf-8",
-			data: data,
-			success: function() {
-				alert("삭제 완료")
-				window.location.href = "http://localhost:9090/table";
-			},
-		});
+		if (idList.length == 0) {
+			alert("체크된 아이템이 없습니다");
+		} else {
+			$.ajax({
+				type: "POST",
+				url: "table/delete",
+				dataType: "json",
+				//			contentType: "application/json; charset=utf-8",
+				data: data,
+				success: function(result) {
+					alert("삭제 완료")
+					data.pg = boardList[0].pg;
+					getTable(data)
+				},
+			});
+		}
 	})
 
 	$("#search").click(() => {
@@ -65,6 +68,7 @@ $(document).ready(() => {
 			writer: '',
 			contents: ''
 		}
+
 		switch ($("#menu option:selected").val()) {
 			case 'title':
 				data.title = $("input[name=searchText]").val();
@@ -78,12 +82,16 @@ $(document).ready(() => {
 			default:
 				break;
 		}
-		getTable(data)
-		getPage(data)
+		if (data.title.length > 10 || data.contents.length > 10 || data.writer.length > 10) {
+			alert("검색어는 10자 이하로 입력해주세요");
+		} else {
+			getTable(data)
+		}
 	})
 })
 
 function getTable(data) {
+	$(document).off();
 	$.ajax({
 		type: "POST",
 		url: "table",
@@ -91,7 +99,8 @@ function getTable(data) {
 		contentType: "application/json; charset=utf-8",
 		data: JSON.stringify(data),
 		success: function(result) {
-			var tableHtml = ''
+			tableHtml = ''
+			pageHtml = ''
 			boardList = result.boardList;
 			tableHtml += `	<tr>
 								<th><b>체크</b></th>
@@ -102,74 +111,52 @@ function getTable(data) {
 								<th><b>조회수</b></th>
 							</tr>`
 			if (!boardList[0]) {
-				tableHtml += `<tr><td colspan="6">내용이 없습니다</td></tr>`
+				tableHtml += `<tr><td colspan="6" style="text-align: center;">내용이 없습니다</td></tr>`;
+				$("#prev").css("display", "none");
+				$("#next").css("display", "none");
 			} else {
+				total = result.total;
+				now = boardList[0].pg;
+				max = Math.ceil(total / 10);
+				start = Math.ceil(now / 5) * 5 - 4;
+				end = Math.ceil(now / 5) * 5;
+
+				if (end >= max) {
+					end = max
+				}
+
 				for (board of boardList) {
 					tableHtml += `<tr>`
 					tableHtml += `<td><input type="checkbox" name="deleteBtn" value="${board.id}"></td>`
-					tableHtml += `<td class="${board.id}" value="${board.views}">${board.id}</td>`
-					tableHtml += `<td class="${board.id}" value="${board.views}">${board.title}</td>`
-					tableHtml += `<td class="${board.id}" value="${board.views}">${board.writer}</td>`
-					tableHtml += `<td class="${board.id}" value="${board.views}">${board.cdate}</td>`
-					tableHtml += `<td class="${board.id}" value="${board.views}">${board.views}</td>`
+					tableHtml += `<td> <a class="${board.id}" value="${board.views}">${board.id}</a></td>`
+					tableHtml += `<td> <a class="${board.id}" value="${board.views}">${board.title}</a></td>`
+					tableHtml += `<td> <a class="${board.id}" value="${board.views}">${board.writer}</a></td>`
+					tableHtml += `<td> <a class="${board.id}" value="${board.views}">${board.cdate}</a></td>`
+					tableHtml += `<td> <a class="${board.id}" value="${board.views}">${board.views}</a></td>`
 					tableHtml += `</tr>`
 					// es6 안먹음 () => {}  --> function() {}
+
 					$(document).on("click", `.${board.id}`, function() {
 						data.id = $(this).attr('class');
 						countView(data)
 					});
 				}
-			}
 
-			$("#board").html(tableHtml);
-		}
-	});
-}
-
-function getPage(data) {
-	$.ajax({
-		type: "POST",
-		url: "table",
-		dataType: "json",
-		contentType: "application/json; charset=utf-8",
-		data: JSON.stringify(data),
-		success: function(result) {
-			var pageHtml = ``
-			boardList = result.boardList;
-			if (!boardList[0]) {
-				$("#prev").css("display", "none");
-				$("#next").css("display", "none");
-			}
-			else {
-				total = result.total;
-				now = boardList[0].pg;
-				max = Math.ceil(total / 10);
-				var start = 1;
-				var end = 5;
-
-				if (max < 5) {
-					end = max
-				} else if (max >= 5 && now < 3) {
-					start = 1;
-					end = 5;
-				} else if (max >= 5 && now >= 3 && now < max - 2) {
-					start = parseInt(now) - 2;
-					end = parseInt(now) + 2;
-				} else {
-					end = max;
-					start = max - 4;
-				}
 				for (var i = start; i <= end; i++) {
-					pageHtml += `<a href="#" id="${i}">${i}</a>`
+					pageHtml += `<a href="#" id="${i}" class="">${i}</a>`;
 					$(document).on("click", `#${i}`, function() {
 						data.pg = $(this).attr("id");
+
 						getTable(data);
-					});
+					})
 				}
 				$("#prev").css("display", "block");
 				$("#next").css("display", "block");
 			}
+			console.log(now)
+			$("#board").html(tableHtml);
 			$("#page").html(pageHtml);
+			$(`#${data.pg}`).addClass("active")
 		}
 	});
 }

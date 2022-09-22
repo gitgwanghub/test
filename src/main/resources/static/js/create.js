@@ -6,10 +6,15 @@ $(document).ready(() => {
 			writer: $("#writer").val().trim(),
 			contents: $("#contents").val().trim()
 		}
+		
 		if (!data.title || !data.writer || !data.contents) {
 			alert("빈칸을 입력해 주세요");
-		} else {
-
+		} 
+		
+		else if (data.writer.length > 10 || data.title.length > 10 || data.contents.length >10) {
+		 alert("10자이내로 작성");	
+		} 
+		else {
 			$.ajax({
 				type: "POST",
 				url: "/table/create/insert",

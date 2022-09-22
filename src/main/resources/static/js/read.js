@@ -13,12 +13,12 @@ $(document).ready(() => {
 	})
 
 	$("#delete").click(() => {
-		var data = {idList: [board.id]}
+		var data = { idList: [board.id] }
 		$.ajax({
 			type: "POST",
 			url: "/table/delete",
 			dataType: "json",
-//			contentType: "application/json; charset=utf-8",
+			//			contentType: "application/json; charset=utf-8",
 			data: data,
 			success: function(result) {
 				alert("삭제 성공")
@@ -50,6 +50,8 @@ $(document).ready(() => {
 
 		if (!data.title || !data.writer || !data.contents) {
 			alert("내용을 입력해주세요")
+		} else if (data.title.length > 10 || data.contents.length > 10 || data.writer.length > 10) {
+			alert("10자 이하로 작성")
 		} else {
 			$.ajax({
 				type: "POST",
@@ -58,10 +60,13 @@ $(document).ready(() => {
 				contentType: "application/json; charset=utf-8",
 				data: JSON.stringify(data),
 				success: function(result) {
-					var board = result.board
+					board = result.board
 					$("#titleDiv").html(`<p>${board.title}</p>`);
+					$("#titleDiv").val(board.title);
 					$("#writerDiv").html(`<p>${board.writer}</p>`);
+					$("#writerDiv").val(board.writer);
 					$("#contentsDiv").html(`<p>${board.contents}</p>`);
+					$("#contentsDiv").val(board.contents);
 					$("#list").css("display", "block");
 					$("#delete").css("display", "block");
 					$("#updateButton").css("display", "block");
