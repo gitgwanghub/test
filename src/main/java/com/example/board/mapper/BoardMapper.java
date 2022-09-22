@@ -13,6 +13,6 @@ public interface BoardMapper {
 	public void insert(BoardDto dto);
 	public void update(BoardDto dto);
 	public void delete(List<Integer> idList);
-	public BoardDto getBoard(int idddddd);
+	public BoardDto getBoard(int id);
 	public void viewCnt(BoardDto dto);
 }

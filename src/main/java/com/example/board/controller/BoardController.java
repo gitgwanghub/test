@@ -21,6 +21,7 @@ import com.example.board.service.BoardService;
 public class BoardController {
 	@Autowired
 	BoardService service;
+	//
 
 	@GetMapping("/table")
 	public String table(Model model) {
